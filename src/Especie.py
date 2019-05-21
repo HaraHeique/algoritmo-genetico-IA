@@ -11,15 +11,20 @@ class Especie:
     def __init__(self, nBits: int, dominioX: tuple = None):
         self._binario: str = self.__geraNumeroBinario(nBits)
         self._dominio: tuple = dominioX if dominioX != None else (-10,10)
-        self._aptidao: float = 0.0
+        self._aptidao: float = self.calculaAptidao()
 
     @property
     def individuo(self):
         return self._binario
 
+    @property
+    def aptidao(self):
+        return self._aptidao
+
     @individuo.setter
     def individuo(self, value: str):
         self._binario = value
+        self._aptidao = self.calculaAptidao()
 
     # Cria o indivíduo da espécie de forma aleatória de acordo com o número de bits
     def __geraNumeroBinario(self, numBits: int) -> str:
