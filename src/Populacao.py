@@ -27,7 +27,7 @@ class Populacao:
         '''Cria indivíduos de uma dada espécie da população passando como argumento o 
            número de indivíduos.'''
         while (nIndividuos > 0):
-            novaEspecie = Especie(qtdBits)
+            novaEspecie: Especie = Especie(qtdBits)
             self.addEspecie(novaEspecie)
             nIndividuos -= 1
 
@@ -59,11 +59,11 @@ class Populacao:
     def aplicaMutacao(self) -> bool:
         '''Aplica mutação no bit correspondente para cada indivíduo da espécie caso esteja na taxa 
            definida na população e retorna True caso teve alguma mutação.'''
-        individuoMutado: str = ""
+    
         teveMutacao: bool = False
-        
         # Checa a mutação para cada indivíduo da espécie
         for especie in self._especies:
+            individuoMutado: str = ""
 
             for i in range(len(especie.individuo)):
 
@@ -82,9 +82,6 @@ class Populacao:
             # Altera o bit que sofreu mutação e atualiza os bits, caso tenha mutação pois aí é recalculado a aptidão
             if (teveMutacao):
                 especie.individuo = individuoMutado
-            
-            # Reseta a cadeia de bits para o próximo
-            individuoMutado = ""
 
         return teveMutacao
 

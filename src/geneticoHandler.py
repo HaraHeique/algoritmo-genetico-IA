@@ -7,6 +7,10 @@
 
 from Especie import Especie
 from Populacao import Populacao
+import os
+
+# Variável global que armazena o local/diretório onde é guardado os arquivos
+STORE_FILES_PATH: str = os.path.dirname(os.path.abspath(__file__)) + "/files/"
 
 def generatePopulacao(numIndividuos: int, numBits: int, taxaCrossover: float, taxaMutacao: float) -> Populacao:
     '''Cria a população baseado no número de indivíduos e número de bits.'''
@@ -34,5 +38,16 @@ def generateNewGeracoes(populacao: Populacao, numGeracoes: int) -> dict:
 
     return bestAptidoes
         
-    
+def createFile(dadosAptidao: dict, numGeracoes: int, numIndividuos: int, execucao: int) -> None:
+    '''Cria o arquivo CSV com as informações dos melhores valores de aptidão para
+       cada geração'''
+    try:
+        filename: str = "{0}_geracoes_{1}_individuos_{2}_execucao.csv".format(numGeracoes, numIndividuos, execucao)
+        with open(STORE_FILES_PATH + filename, "wt") as outfile:
+            outfile.write("Geração;Aptidão(f(x))\n")
+            for key in sorted(dadosAptidao.keys()):
+                outfile.write("%d;%.10f\n" %(key, dadosAptidao[key]))
+
+    except IOError:
+        raise Exception("Não foi possível abrir o arquivo.")
     
