@@ -11,6 +11,7 @@ class Especie:
     def __init__(self, nBits: int, dominioX: tuple = None):
         self._binario: str = self.__geraNumeroBinario(nBits)
         self._dominio: tuple = dominioX if dominioX != None else (-10,10)
+        self._normalizado: float = 0.0
         self._aptidao: float = self.calculaAptidao()
 
     @property
@@ -20,6 +21,10 @@ class Especie:
     @property
     def aptidao(self):
         return self._aptidao
+
+    @property
+    def normalizado(self):
+        return self._normalizado
 
     @individuo.setter
     def individuo(self, value: str):
@@ -58,14 +63,14 @@ class Especie:
         l: int = len(self._binario)
 
         # Realiza o cálculo da normalização
-        x: float = min + (max - min) * (base10 / (2**l) - 1)
+        x: float = min + (max - min) * (base10 / ((2**l) - 1))
 
         return x
 
     # Calcula a aptidão do indivíduo da espécie
     def calculaAptidao(self) -> float:
         '''Calcula a aptidão/fitness do indivíduo da espécie baseado em seu cálculo de normalização.'''
-        x: float = self.__calculaNormalizacao()
-        fx: float = (x**2) - (3 * x) + 4
+        self._normalizado = self.__calculaNormalizacao()
+        fx: float = (self._normalizado**2) - (3 * self._normalizado) + 4
         
         return fx

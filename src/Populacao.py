@@ -100,11 +100,11 @@ class Populacao:
             raise Exception("Espécies pais com número de bits diferentes!")
         
         # Ponto de corte escolhido de forma aleatório
-        numBitsCorte: int = randint(0, len(individuo1.individuo))
+        numBitsCorte: int = randint(1, len(individuo1.individuo))
         numBitsRepetidos: int = len(individuo1.individuo) - numBitsCorte
         
         # Cria os novos indivíduos e realiza o crossover de fato
-        bitsIndiduo1: str = individuo1.individuo[0:numBitsRepetidos] + individuo2.individuo[-numBitsCorte:]
+        bitsIndiduo1: str = individuo1.individuo[0:numBitsRepetidos] + individuo2.individuo[-numBitsCorte:] 
         bitsIndiduo2: str = individuo2.individuo[0:numBitsRepetidos] + individuo1.individuo[-numBitsCorte:]
 
         # Seta os valores de bits correspondente ao novo indivíduo, o que também calcula o valor de aptidão novamente
@@ -142,7 +142,7 @@ class Populacao:
 
         return teveCrossover
 
-    def bestAptidaoIndividuo(self):
+    def bestAptidaoIndividuo(self) -> Especie:
         '''Pega o indivíduo de um população com melhor valor de aptidão/fitness'''
         return min(self._especies, key = lambda x: x.aptidao)
 
