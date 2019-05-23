@@ -6,6 +6,7 @@
 
 from random import uniform, randint, randrange
 from Especie import Especie
+import copy
 
 class Populacao:
     '''Classe que representa a população que contém um conjunto de espécies.'''
@@ -33,8 +34,9 @@ class Populacao:
 
     # Faz a seleção de maneira aleatória dos indivíduos que serão realizados o crossover baseado nos pais correntes
     def __torneioSelection(self) -> list:
-        indivuosSelected: list = []
-        qntSelection: int = len(self._especies)
+        # Fazendo o elitismo e guardando o indivíduo da espécie da população de melhor aptidão
+        indivuosSelected: list = [self.bestAptidaoIndividuo()]
+        qntSelection: int = len(self._especies) - 1
         
         while (qntSelection > 0):
             # Pega o indivíduo aleatoriamente com taxa de rodeio de 2
@@ -61,9 +63,15 @@ class Populacao:
            definida na população e retorna True caso teve alguma mutação.'''
     
         teveMutacao: bool = False
+        especieComMelhorAptidao: Especie = self.bestAptidaoIndividuo()
+
         # Checa a mutação para cada indivíduo da espécie
         for especie in self._especies:
             individuoMutado: str = ""
+            
+            # Não realiza mutação no melhor indivíduo da espécie
+            if (especieComMelhorAptidao == especie):
+                continue
 
             for i in range(len(especie.individuo)):
 
@@ -123,6 +131,9 @@ class Populacao:
         filhos: list = []
         pais: list = self.__torneioSelection()
 
+        # Pega o melhor pai e substitui o com o pior filho como uma tática para convergir
+        bestIndividuoPaiAptidao: Especie = copy.deepcopy(self.bestAptidaoIndividuo())
+
         while (len(filhos) < len(pais)):
             # Pega o indivíduo aleatoriamente
             individuo1: Especie = pais[randrange(0, len(pais))]
@@ -136,6 +147,10 @@ class Populacao:
                 filhos += self.__doCrossover(individuo1, individuo2)
             else:
                 filhos += [individuo1, individuo2]
+
+        # Pega o filho com maior taxa de crossover e deleta ele da lista e adiciona o pai com melhor taxa de aptidão
+        del filhos[filhos.index(max(filhos, key = lambda x: x.aptidao))]
+        filhos.append(bestIndividuoPaiAptidao)
 
         # Substitui a nova espécie com os novos filhos
         self._especies = filhos

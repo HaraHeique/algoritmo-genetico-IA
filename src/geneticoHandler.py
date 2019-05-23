@@ -8,7 +8,7 @@
 from Especie import Especie
 from Populacao import Populacao
 from matplotlib import pyplot
-import os
+import os, copy
 
 # Variável global que armazena o local/diretório onde é guardado os arquivos
 STORE_FILES_PATH: str = os.path.dirname(os.path.abspath(__file__)) + "/files/"
@@ -35,7 +35,7 @@ def generateNewGeracoes(populacao: Populacao, numGeracoes: int) -> dict:
         teveMutacao: bool = populacao.aplicaMutacao()
 
         # Pega o melhor valor de aptidão dentre todos da espécies e armazena
-        bestEspeciesByGeneration[i+1] = populacao.bestAptidaoIndividuo()
+        bestEspeciesByGeneration[i+1] = copy.deepcopy(populacao.bestAptidaoIndividuo())
 
     return bestEspeciesByGeneration
         
@@ -52,22 +52,19 @@ def createFile(bestEspecies: dict, numGeracoes: int, numIndividuos: int, execuca
     except IOError:
         raise Exception("Não foi possível abrir o arquivo.")
     
-def calcularMediaNormalizacao(bestEspecies: list) -> list:
-    numIndividuosPorGeracao: int = len(bestEspecies[0]) if len(bestEspecies) > 0 else 0
-    normalizadoValuesPorExecutions: list = []
+def calcularMediaNormalizacao(bestEspecies: list, numGeracoes: int) -> list:
+    mediaNormalizacoes: list = []
 
     # Pega valor de normalização na lista dicionários de espécie para realizar o cálculo da média de cada um
-    for i in range(numIndividuosPorGeracao):
+    for i in range(numGeracoes):
         # Pega uma lista de floats com os valores da normalização
         normalizacoesList: list = list(map(lambda d: d[i+1].normalizado, bestEspecies))
-        normalizadoValuesPorExecutions.append(normalizacoesList)
-
-    # Calcula a média dos valores na lista de normalização e adiciona na lista
-    numExecucoes: int = len(bestEspecies)
-    somaNormalizacaoPorExecucao: list = [sum(y) for y in zip(*normalizadoValuesPorExecutions)]
-    mediaNormalizacoesPorExecucao: list = [y/numExecucoes for y in somaNormalizacaoPorExecucao]
-
-    return mediaNormalizacoesPorExecucao
+        
+        # Faz o cálculo da normalização de acordo com o número de execuções e adiciona na lista de médias por cada geração
+        mediaNormalizacaoCorrente: float = sum(normalizacoesList) / len(normalizacoesList)
+        mediaNormalizacoes.append(mediaNormalizacaoCorrente)
+    
+    return mediaNormalizacoes
 
 def gerarGraficoNormalizacao(mediaNormalizacao: list) -> None:
     geracoes: list = [(i+1) for i in range(len(mediaNormalizacao))]
@@ -77,7 +74,7 @@ def gerarGraficoNormalizacao(mediaNormalizacao: list) -> None:
     pyplot.ylabel("Valor de normalização")
 
     # Plotando e construindo o gráfico
-    pyplot.plot(geracoes, mediaNormalizacao)
+    pyplot.plot(geracoes, mediaNormalizacao, marker='.')
 
     # Mostrando o gráfico na tela
     pyplot.show()

@@ -8,8 +8,8 @@ from random import randrange
 
 class Especie:
     '''Classe que representa o indivíduo da espécie.'''
-    def __init__(self, nBits: int, dominioX: tuple = None):
-        self._binario: str = self.__geraNumeroBinario(nBits)
+    def __init__(self, bits, dominioX: tuple = None):
+        self._binario: str = self.__geraNumeroBinario(bits) if type(bits) == int else bits
         self._dominio: tuple = dominioX if dominioX != None else (-10,10)
         self._normalizado: float = 0.0
         self._aptidao: float = self.calculaAptidao()

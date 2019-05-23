@@ -4,12 +4,19 @@ from Populacao import Populacao
 
 def main():
     # Entrada de dados do usuário com a cerca do estudo dos indivíduos da espécie de uma dada população
-    qntIndividuos: int = userInput.qntIndividuos()
-    precisaoIndividuos: int = userInput.precisaoIndividuos()
-    qntGeracoes: int = userInput.qntGeracoes()
-    taxaCrossover: float = userInput.taxaCrossoverPopulacao() / 100
-    taxaMutacao: float = userInput.taxaMutacaoPopulacao() / 100
-    qntExecucoes: int = userInput.qntExecucoesAlgoritmo()
+    # qntIndividuos: int = userInput.qntIndividuos()
+    # precisaoIndividuos: int = userInput.precisaoIndividuos()
+    # qntGeracoes: int = userInput.qntGeracoes()
+    # taxaCrossover: float = userInput.taxaCrossoverPopulacao() / 100
+    # taxaMutacao: float = userInput.taxaMutacaoPopulacao() / 100
+    # qntExecucoes: int = userInput.qntExecucoesAlgoritmo()
+
+    qntIndividuos: int = 100
+    precisaoIndividuos: int = 10
+    qntGeracoes: int = 10
+    taxaCrossover: float = 0.6
+    taxaMutacao: float = 0.01
+    qntExecucoes: int = 1
 
     bestEspeciesList: list = []
 
@@ -25,7 +32,7 @@ def main():
         bestEspeciesList.append(bestEspecies)
 
     # Calcula a média de normalização para cada geração das execuções
-    mediaNormalizacoes: list = geneticoHandler.calcularMediaNormalizacao(bestEspeciesList)
+    mediaNormalizacoes: list = geneticoHandler.calcularMediaNormalizacao(bestEspeciesList, qntGeracoes)
 
     # Mostra o gráfico utilizando o matplot
     geneticoHandler.gerarGraficoNormalizacao(mediaNormalizacoes)
