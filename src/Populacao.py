@@ -61,14 +61,14 @@ class Populacao:
     def aplicaMutacao(self) -> bool:
         '''Aplica mutação no bit correspondente para cada indivíduo da espécie caso esteja na taxa 
            definida na população e retorna True caso teve alguma mutação.'''
-    
+
         teveMutacao: bool = False
         especieComMelhorAptidao: Especie = self.bestAptidaoIndividuo()
 
         # Checa a mutação para cada indivíduo da espécie
         for especie in self._especies:
             individuoMutado: str = ""
-            
+
             # Não realiza mutação no melhor indivíduo da espécie
             if (especieComMelhorAptidao == especie):
                 continue

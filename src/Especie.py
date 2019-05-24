@@ -74,3 +74,4 @@ class Especie:
         fx: float = (self._normalizado**2) - (3 * self._normalizado) + 4
         
         return fx
+

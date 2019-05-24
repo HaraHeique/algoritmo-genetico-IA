@@ -26,16 +26,19 @@ def main():
         
         # Realiza a geração das espécies e pega os melhores valores de aptidão de cada geração
         bestEspecies: dict = geneticoHandler.generateNewGeracoes(populacao, qntGeracoes)
-        #geneticoHandler.createFile(bestEspecies, qntGeracoes, qntIndividuos, execucao + 1)
+        geneticoHandler.createFile(bestEspecies, qntGeracoes, qntIndividuos, execucao + 1)
 
         # Pega as melhores espécies com os melhores valores de aptidão
         bestEspeciesList.append(bestEspecies)
 
     # Calcula a média de normalização para cada geração das execuções
     mediaNormalizacoes: list = geneticoHandler.calcularMediaNormalizacao(bestEspeciesList, qntGeracoes)
+    mediaAptidao: list = geneticoHandler.calcularMediaAptidao(bestEspeciesList, qntGeracoes)
 
     # Mostra o gráfico utilizando o matplot
+    geneticoHandler.gerarGraficoAptidao(mediaAptidao)
     geneticoHandler.gerarGraficoNormalizacao(mediaNormalizacoes)
+
     
     return
 
