@@ -90,8 +90,8 @@ def gerarGraficoNormalizacao(mediaNormalizacao: list) -> None:
 
     # Nomeando os eixos x e y
     pyplot.xlabel("Geração")
-
     pyplot.ylabel("Valor de normalização")
+    pyplot.title('Média de normalização')
 
     # Plotando e construindo o gráfico
     pyplot.plot(geracoes, mediaNormalizacao, marker='.')
@@ -105,7 +105,7 @@ def gerarGraficoAptidao(mediaAptidao: list) -> None:
     # Nomeando os eixos x e y
     pyplot.xlabel("Geração")
     pyplot.ylabel("Valor de fitness")
-
+    pyplot.title('Média de fitness')
     # Plotando e construindo o gráfico
     pyplot.plot(geracoes, mediaAptidao, marker='.')
 
