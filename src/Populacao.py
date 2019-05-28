@@ -103,19 +103,24 @@ class Populacao:
         return False
 
     # Caso aconteça o crossover, essa função vai alterar os genes
-    def __doCrossover(self, individuo1: Especie, individuo2: Especie) -> list:
+    def __doCrossover(self, individuo1: Especie, individuo2: Especie, taxaCrossover: float) -> list:
         if (len(individuo1.individuo) != len(individuo2.individuo)):
             raise Exception("Espécies pais com número de bits diferentes!")
-        
+
         # Ponto de corte escolhido de forma aleatório
-        numBitsCorte: int = randint(1, len(individuo1.individuo))
-        numBitsRepetidos: int = len(individuo1.individuo) - numBitsCorte
+        nCorte:int = int(taxaCrossover) *10
+        #numBitsCorte: int = randint(1, len(individuo1.individuo))
+        #numBitsRepetidos: int = len(individuo1.individuo) - numBitsCorte
         
         # Cria os novos indivíduos e realiza o crossover de fato
+        bitsIndiduo1: str = individuo1.individuo[0:nCorte] + individuo2.individuo[-nCorte:]
+        bitsIndiduo2: str = individuo2.individuo[0:nCorte] + individuo1.individuo[-nCorte:]
+        '''
         bitsIndiduo1: str = individuo1.individuo[0:numBitsRepetidos] + individuo2.individuo[-numBitsCorte:] 
         bitsIndiduo2: str = individuo2.individuo[0:numBitsRepetidos] + individuo1.individuo[-numBitsCorte:]
+        '''
 
-        # Seta os valores de bits correspondente ao novo indivíduo, o que também calcula o valor de aptidão novamente
+        #Seta os valores de bits correspondente ao novo indivíduo, o que também calcula o valor de aptidão novamente
         individuo1.individuo = bitsIndiduo1
         individuo2.individuo = bitsIndiduo2
 
@@ -144,7 +149,7 @@ class Populacao:
                 teveCrossover = True
 
                 # Faz o crossover nos indivíduos recuperados na lista de especies da população
-                filhos += self.__doCrossover(individuo1, individuo2)
+                filhos += self.__doCrossover(individuo1, individuo2,self._taxaCrossover)
             else:
                 filhos += [individuo1, individuo2]
 

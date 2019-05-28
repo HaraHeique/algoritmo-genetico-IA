@@ -11,11 +11,11 @@ def main():
     # taxaMutacao: float = userInput.taxaMutacaoPopulacao() / 100
     # qntExecucoes: int = userInput.qntExecucoesAlgoritmo()
 
-    qntIndividuos: int = 100
+    qntIndividuos: int = 4
     precisaoIndividuos: int = 10
     qntGeracoes: int = 10
     taxaCrossover: float = 0.6
-    taxaMutacao: float = 0.01
+    taxaMutacao: float = 0.1
     qntExecucoes: int = 1
 
     bestEspeciesList: list = []
