@@ -2,6 +2,7 @@ import userInput
 import geneticoHandler
 from Populacao import Populacao
 
+
 def main():
     # Entrada de dados do usuário com a cerca do estudo dos indivíduos da espécie de uma dada população
     # qntIndividuos: int = userInput.qntIndividuos()

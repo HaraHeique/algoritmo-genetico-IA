@@ -4,14 +4,19 @@
     Classe que representa o indivíduo da espécie.
 """
 
-from random import randrange
+from random import randrange,uniform
 
 class Especie:
     '''Classe que representa o indivíduo da espécie.'''
-    def __init__(self, bits, dominioX: tuple = None):
-        self._binario: str = self.__geraNumeroBinario(bits) if type(bits) == int else bits
-        self._dominio: tuple = dominioX if dominioX != None else (-10,10)
+    def __init__(self, bits, isBinario: bool, dominioX: tuple = None):
+        self._isbinario: bool = isBinario
         self._normalizado: float = 0.0
+        if (isBinario):
+            self._binario: str = self.__geraNumeroBinario(bits) if type(bits) == int else bits
+        else:
+            self._ponto: tuple = (randrange(-10,10),randrange(-10,10))
+
+        self._dominio: tuple = dominioX if dominioX != None else (-10,10)
         self._aptidao: float = self.calculaAptidao()
 
     @property
@@ -70,8 +75,18 @@ class Especie:
     # Calcula a aptidão do indivíduo da espécie
     def calculaAptidao(self) -> float:
         '''Calcula a aptidão/fitness do indivíduo da espécie baseado em seu cálculo de normalização.'''
-        self._normalizado = self.__calculaNormalizacao()
-        fx: float = (self._normalizado**2) - (3 * self._normalizado) + 4
-        
+
+        fx: float = 0.0
+
+        if (self._isbinario):
+            self._normalizado = self.__calculaNormalizacao()
+
+        else:
+            self._normalizado: float = uniform(-10,10)
+
+
+        fx = (self._normalizado ** 2) - (3 * self._normalizado) + 4
         return fx
+
+
 

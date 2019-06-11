@@ -28,7 +28,7 @@ class Populacao:
         '''Cria indivíduos de uma dada espécie da população passando como argumento o 
            número de indivíduos.'''
         while (nIndividuos > 0):
-            novaEspecie: Especie = Especie(qtdBits)
+            novaEspecie: Especie = Especie(qtdBits,True)
             self.addEspecie(novaEspecie)
             nIndividuos -= 1
 
@@ -165,6 +165,18 @@ class Populacao:
     def bestAptidaoIndividuo(self) -> Especie:
         '''Pega o indivíduo de um população com melhor valor de aptidão/fitness'''
         return min(self._especies, key = lambda x: x.aptidao)
+
+
+
+    #
+    def blendCrossover(p1: Especie, p2: Especie):
+        beta: float = uniform(-0.5,1.5)
+        c1:float = p1._ponto[0] + beta*(p2._ponto[0]-p1._ponto[0])
+        beta: float = uniform(-0.5, 1.5)
+        c2: float = p1._ponto[1] + beta*(p2._ponto[1]-p1._ponto[1])
+        return (c1,c2)
+
+
 
 # Testes unitário do módulo
 if __name__ == "__main__":
