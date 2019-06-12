@@ -17,11 +17,17 @@ STORE_FILES_PATH: str = os.path.dirname(os.path.abspath(__file__)) + "/files/"
 if not os.path.exists(STORE_FILES_PATH):
     os.makedirs(STORE_FILES_PATH)
 
-def generatePopulacao(numIndividuos: int, numBits: int, taxaCrossover: float, taxaMutacao: float) -> Populacao:
+def generatePopulacaoBinario(numIndividuos: int, numBits: int, taxaCrossover: float, taxaMutacao: float) -> Populacao:
     '''Cria a população baseado no número de indivíduos e número de bits.'''
-
     populacao: Populacao = Populacao(None, taxaCrossover, taxaMutacao)
     populacao.criaIndividuos(numIndividuos, numBits)
+    
+    return populacao
+
+def generatePopulacaoReal(numIndividuos: int, taxaCrossover: float, taxaMutacao: float) -> Populacao:
+    '''Cria a população baseado no número de indivíduos e número de bits.'''
+    populacao: Populacao = Populacao(None, taxaCrossover, taxaMutacao)
+    populacao.criaIndividuos(numIndividuos)
     
     return populacao
 
@@ -36,7 +42,7 @@ def generateNewGeracoes(populacao: Populacao, numGeracoes: int) -> dict:
         teveCrossover: bool = populacao.aplicaCrossover()
 
         # Aplica a mutação para cada invidíduo da população
-        teveMutacao: bool = populacao.aplicaMutacao()
+        teveMutacao: bool = populacao.aplicaMutacao(i + 1, numGeracoes)
 
         # Pega o melhor valor de aptidão dentre todos da espécies e armazena
         bestEspeciesByGeneration[i+1] = copy.deepcopy(populacao.bestAptidaoIndividuo())
@@ -99,13 +105,13 @@ def gerarGraficoNormalizacao(mediaNormalizacao: list) -> None:
     # Mostrando o gráfico na tela
     pyplot.show()
 
-def gerarGraficoAptidao(mediaAptidao: list) -> None:
+def gerarGraficoAptidao(mediaAptidao: list, titleGraph: str) -> None:
     geracoes: list = [(i+1) for i in range(len(mediaAptidao))]
 
     # Nomeando os eixos x e y
     pyplot.xlabel("Geração")
     pyplot.ylabel("Valor de fitness")
-    pyplot.title('Média de fitness')
+    pyplot.title(titleGraph)
     # Plotando e construindo o gráfico
     pyplot.plot(geracoes, mediaAptidao, marker='.')
 

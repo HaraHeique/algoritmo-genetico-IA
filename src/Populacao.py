@@ -24,11 +24,12 @@ class Populacao:
         self._especies.append(especies)
 
     # Cria indivíduos de uma dada espécie da população passando como argumento o número de indivíduos
-    def criaIndividuos(self, nIndividuos: int, qtdBits: int) -> None:
+    def criaIndividuos(self, nIndividuos: int, qtdBits: int = None) -> None:
         '''Cria indivíduos de uma dada espécie da população passando como argumento o 
            número de indivíduos.'''
         while (nIndividuos > 0):
-            novaEspecie: Especie = Especie(qtdBits,True)
+            # Cria a espécie definindo de acordo com ele sendo binário ou real
+            novaEspecie: Especie = Especie(True, qtdBits) if qtdBits != None else Especie(False)
             self.addEspecie(novaEspecie)
             nIndividuos -= 1
 
@@ -58,7 +59,7 @@ class Populacao:
         return False
 
     # Verifica se cada bit tem alguma mutação, caso haja, altera o bit
-    def aplicaMutacao(self) -> bool:
+    def aplicaMutacao(self, geracaoCorrente: int, qntMaxGeracoes: int) -> bool:
         '''Aplica mutação no bit correspondente para cada indivíduo da espécie caso esteja na taxa 
            definida na população e retorna True caso teve alguma mutação.'''
 
@@ -67,29 +68,48 @@ class Populacao:
 
         # Checa a mutação para cada indivíduo da espécie
         for especie in self._especies:
-            individuoMutado: str = ""
-
+            
             # Não realiza mutação no melhor indivíduo da espécie
             if (especieComMelhorAptidao == especie):
                 continue
 
-            for i in range(len(especie.individuo)):
+            # Caso a especie seja binária
+            if (especie.isbinario):
+                individuoMutado: str = ""
 
-                # Caso caia na probabilidade da mutação troca o seu bit
-                if (self.__hasMutacao()):
-                    teveMutacao = True
-                    if (especie.individuo[i] == '1'):
-                        individuoMutado += '0'
-                    elif (especie.individuo[i] == '0'):
-                        individuoMutado += '1'
+                for i in range(len(especie.individuo)):
+
+                    # Caso caia na probabilidade da mutação troca o seu bit
+                    if (self.__hasMutacao()):
+                        teveMutacao = True
+                        if (especie.individuo[i] == '1'):
+                            individuoMutado += '0'
+                        elif (especie.individuo[i] == '0'):
+                            individuoMutado += '1'
+                        else:
+                            raise Exception("O indivíduo não possui uma cadeia binária correta.")
                     else:
-                        raise Exception("O indivíduo não possui uma cadeia binária correta.")
+                        individuoMutado += especie.individuo[i]
+                    
+                # Altera o bit que sofreu mutação e atualiza os bits, caso tenha mutação pois aí é recalculado a aptidão
+                if (teveMutacao):
+                    especie.individuo = individuoMutado
+
+            # Caso seja uma espécie real
+            elif(self.__hasMutacao()):
+                teveMutacao = True
+
+                # Faz a mutação não-uniforme
+                r1: float = uniform(0, 1)
+                r2: float = uniform(0, 1)
+                fg: float = r2 * (1 - (geracaoCorrente / qntMaxGeracoes))
+
+                if (r1 < 0.5):
+                    bi: float = especie.dominio[1]
+                    especie.aptidao = especie.aptidao + (bi - especie.aptidao) * fg
                 else:
-                    individuoMutado += especie.individuo[i]
-                
-            # Altera o bit que sofreu mutação e atualiza os bits, caso tenha mutação pois aí é recalculado a aptidão
-            if (teveMutacao):
-                especie.individuo = individuoMutado
+                    ai: float = especie.dominio[0]
+                    especie.aptidao = especie.aptidao - (especie.aptidao - ai) * fg
 
         return teveMutacao
 
@@ -104,25 +124,34 @@ class Populacao:
 
     # Caso aconteça o crossover, essa função vai alterar os genes
     def __doCrossover(self, individuo1: Especie, individuo2: Especie, taxaCrossover: float) -> list:
-        if (len(individuo1.individuo) != len(individuo2.individuo)):
-            raise Exception("Espécies pais com número de bits diferentes!")
-
-        # Ponto de corte escolhido de forma aleatório
-        nCorte:int = int(taxaCrossover) *10
-        #numBitsCorte: int = randint(1, len(individuo1.individuo))
-        #numBitsRepetidos: int = len(individuo1.individuo) - numBitsCorte
         
-        # Cria os novos indivíduos e realiza o crossover de fato
-        bitsIndiduo1: str = individuo1.individuo[0:nCorte] + individuo2.individuo[-nCorte:]
-        bitsIndiduo2: str = individuo2.individuo[0:nCorte] + individuo1.individuo[-nCorte:]
-        '''
-        bitsIndiduo1: str = individuo1.individuo[0:numBitsRepetidos] + individuo2.individuo[-numBitsCorte:] 
-        bitsIndiduo2: str = individuo2.individuo[0:numBitsRepetidos] + individuo1.individuo[-numBitsCorte:]
-        '''
+        # Para espécies binárias
+        if (individuo1._isbinario and individuo2._isbinario):
 
-        #Seta os valores de bits correspondente ao novo indivíduo, o que também calcula o valor de aptidão novamente
-        individuo1.individuo = bitsIndiduo1
-        individuo2.individuo = bitsIndiduo2
+            if (len(individuo1.individuo) != len(individuo2.individuo)):
+                raise Exception("Espécies pais com número de bits diferentes!")
+
+            # Ponto de corte escolhido de forma aleatório
+            nCorte: int = int(taxaCrossover) * 10
+            #numBitsCorte: int = randint(1, len(individuo1.individuo))
+            #numBitsRepetidos: int = len(individuo1.individuo) - numBitsCorte
+            
+            # Cria os novos indivíduos e realiza o crossover de fato
+            bitsIndiduo1: str = individuo1.individuo[0:nCorte] + individuo2.individuo[-nCorte:]
+            bitsIndiduo2: str = individuo2.individuo[0:nCorte] + individuo1.individuo[-nCorte:]
+
+            #Seta os valores de bits correspondente ao novo indivíduo, o que também calcula o valor de aptidão novamente
+            individuo1.individuo = bitsIndiduo1
+            individuo2.individuo = bitsIndiduo2
+
+        # Para espécies real
+        else:
+            # Realiza o Blend Crossover
+            filho1Real: float = individuo1.aptidao + (uniform(-0.5, 1.5) * (individuo2.aptidao - individuo1.aptidao))
+            filho2Real: float = individuo1.aptidao + (uniform(-0.5, 1.5) * (individuo2.aptidao - individuo1.aptidao))
+
+            individuo1.aptidao = filho1Real
+            individuo2.aptidao = filho2Real
 
         return [individuo1, individuo2]
 
@@ -149,7 +178,7 @@ class Populacao:
                 teveCrossover = True
 
                 # Faz o crossover nos indivíduos recuperados na lista de especies da população
-                filhos += self.__doCrossover(individuo1, individuo2,self._taxaCrossover)
+                filhos += self.__doCrossover(individuo1, individuo2, self._taxaCrossover)
             else:
                 filhos += [individuo1, individuo2]
 
@@ -165,18 +194,6 @@ class Populacao:
     def bestAptidaoIndividuo(self) -> Especie:
         '''Pega o indivíduo de um população com melhor valor de aptidão/fitness'''
         return min(self._especies, key = lambda x: x.aptidao)
-
-
-
-    #
-    def blendCrossover(p1: Especie, p2: Especie):
-        beta: float = uniform(-0.5,1.5)
-        c1:float = p1._ponto[0] + beta*(p2._ponto[0]-p1._ponto[0])
-        beta: float = uniform(-0.5, 1.5)
-        c2: float = p1._ponto[1] + beta*(p2._ponto[1]-p1._ponto[1])
-        return (c1,c2)
-
-
 
 # Testes unitário do módulo
 if __name__ == "__main__":
